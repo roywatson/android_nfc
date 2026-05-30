@@ -1,0 +1,18 @@
+package com.roywatson.cmp_nfc
+
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.Assert.assertEquals
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class AppContextInstrumentedTest {
+
+    @Test
+    fun usesAndroidOnlyApplicationId() {
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+
+        assertEquals("com.roywatson.android_nfc", appContext.packageName)
+    }
+}
