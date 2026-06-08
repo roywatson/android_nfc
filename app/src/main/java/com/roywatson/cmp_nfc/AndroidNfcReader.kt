@@ -37,20 +37,20 @@ class AndroidNfcReader(private val activity: ComponentActivity) : NfcReader {
                 NfcAdapter.FLAG_READER_NFC_F or
                 NfcAdapter.FLAG_READER_NFC_V
 
-	        adapter!!.enableReaderMode(activity, { tag ->
-	            readingJob = scope.launch(Dispatchers.IO) {
-	                try {
-	                    val tagData = readTag(tag)
-	                    _state.value = NfcReadState.Success(tagData)
-	                } catch (e: Exception) {
-	                    _state.value = NfcReadState.Error(e.message ?: "Unexpected error during NFC read.")
-	                } finally {
-	                    adapter.disableReaderMode(activity)
-	                    readingJob = null
-	                }
-	            }
-	        }, flags, null)
-	    }
+        adapter!!.enableReaderMode(activity, { tag ->
+            readingJob = scope.launch(Dispatchers.IO) {
+                try {
+                    val tagData = readTag(tag)
+                    _state.value = NfcReadState.Success(tagData)
+                } catch (e: Exception) {
+                    _state.value = NfcReadState.Error(e.message ?: "Unexpected error during NFC read.")
+                } finally {
+                    // Keep reader mode active so Android does not redispatch the tag while it remains in the field.
+                    readingJob = null
+                }
+            }
+        }, flags, null)
+    }
 
     override fun stopScanning() {
         readingJob?.cancel()
